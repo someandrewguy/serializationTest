@@ -68,6 +68,9 @@ public class SerializationTiming {
 				ObjectOutputStream out = new ObjectOutputStream(baos);) {
 			for (int i = 0; i < VALUES_COUNT; i++) {
 				out.writeObject(TEST_VALUE_JAVAS.get(i % CREATED_COUNT));
+				if (i != 0 && i % 100 * CREATED_COUNT == 0) {
+					out.flush();
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -82,6 +85,9 @@ public class SerializationTiming {
 				ObjectOutputStream out = new ObjectOutputStream(baos);) {
 			for (int i = 0; i < VALUES_COUNT; i++) {
 				TEST_VALUES.get(i % CREATED_COUNT).writeTo(out);
+				if (i != 0 && i % 100 * CREATED_COUNT == 0) {
+					out.flush();
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
