@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.google.protobuf.CodedOutputStream;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
@@ -68,8 +69,9 @@ public class SerializationTiming {
 				ObjectOutputStream out = new ObjectOutputStream(baos);) {
 			for (int i = 0; i < VALUES_COUNT; i++) {
 				out.writeObject(TEST_VALUE_JAVAS.get(i % CREATED_COUNT));
-				if (i != 0 && i % 100 * CREATED_COUNT == 0) {
+				if (i != 0 && i % (100 * CREATED_COUNT) == 0) {
 					out.flush();
+					baos.reset();
 				}
 			}
 		} catch (IOException e) {
@@ -81,12 +83,13 @@ public class SerializationTiming {
 	@Benchmark
 	@OperationsPerInvocation(VALUES_COUNT)
 	public void serializeAProtobuf() {
-		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream out = new ObjectOutputStream(baos);) {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
+			CodedOutputStream out = CodedOutputStream.newInstance(baos);
 			for (int i = 0; i < VALUES_COUNT; i++) {
 				TEST_VALUES.get(i % CREATED_COUNT).writeTo(out);
-				if (i != 0 && i % 100 * CREATED_COUNT == 0) {
+				if (i != 0 && i % (100 * CREATED_COUNT) == 0) {
 					out.flush();
+					baos.reset();
 				}
 			}
 		} catch (IOException e) {
